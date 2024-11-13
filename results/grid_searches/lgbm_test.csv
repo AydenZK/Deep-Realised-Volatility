@@ -1,0 +1,3 @@
+,objective,metric,early_stopping_rounds,num_leaves,max_depth,learning_rate,reg_alpha,train_rmspe_mean,valid_rmspe_mean,train_rmspe_std,valid_rmspe_std
+0,rmse,rmse,75,500,50,0.1,0,0.2144204178096027,0.24760304222231572,3.806414444904038e-05,0.0018750058749454068
+1,rmse,rmse,75,5000,50,0.1,0,0.17474552682280162,0.2527960498697743,0.0014971752594697685,0.0013650311806356341
