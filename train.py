@@ -64,19 +64,18 @@ def train():
     model_class = MODELS[args.model]
     params = HYPERPARAMS[args.model]
 
-    df_train, df_test = engineer_data(load_local=args.load_local_features)
+    df_train, _ = engineer_data(load_local=args.load_local_features)
     
     X = df_train.drop(columns=["row_id", "time_id", "target"]).copy()
     y = df_train["target"].copy()
 
-    if args.drop_na:
+    if args.drop_na or args.model == "mlp":
         na_idx = X.isna().any(axis=1)
         X = X[~na_idx].reset_index(drop=True)
         y = y[~na_idx].reset_index(drop=True)
-    if args.normalize:
+    if args.normalize or args.model == "mlp":
         scaler = StandardScaler()
         X = pd.DataFrame(scaler.fit_transform(X))
-
 
     n_splits = args.n_splits if args.grid_search else 2
     grid_search_iter = args.search_iter if args.grid_search else 2
