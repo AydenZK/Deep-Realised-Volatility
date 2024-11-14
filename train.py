@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pandas as pd
 import argparse
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import StandardScaler
 
 from engineer import engineer_data
 from models import LGBMModel, MLPModel
@@ -31,11 +31,12 @@ HYPERPARAMS = {
         "hidden_layer_sizes": [
             (32, 64),
             (64, 128),
-            (64, 128, 64),
+            (64, 64, 64),
             (64, 128, 128),
+            (64, 128, 128, 32)
         ],
         "activation": ["relu", "tanh"],
-        "learning_rate_init": [0.0001, 0.001, 0.01],
+        "learning_rate_init": [0.00001, 0.0001, 0.001],
         "learning_rate": ["constant", "adaptive"],
     }
 }
@@ -73,7 +74,7 @@ def train():
         X = X[~na_idx].reset_index(drop=True)
         y = y[~na_idx].reset_index(drop=True)
     if args.normalize:
-        scaler = MinMaxScaler()
+        scaler = StandardScaler()
         X = pd.DataFrame(scaler.fit_transform(X))
 
 

@@ -1,18 +1,14 @@
 import itertools
+import os
 from dataclasses import dataclass
-from typing import Any, Dict, Tuple, List, Type
-from joblib import Parallel, delayed
-import os 
 from pathlib import Path
+from typing import Any, Dict, List, Tuple, Type
 
-import lightgbm as lgb
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import make_scorer, root_mean_squared_error
-from sklearn.model_selection import KFold, train_test_split
-from sklearn.neural_network import MLPRegressor
-from sklearn.preprocessing import MinMaxScaler, StandardScaler
+from joblib import Parallel, delayed
+from sklearn.model_selection import KFold
 from tqdm import tqdm
 
 from models import BaseModel
@@ -37,7 +33,7 @@ class GridSearchResult:
 
 
 def rmspe(y_true, y_pred):
-    return  (np.sqrt(np.mean(np.square((y_true - y_pred) / y_true))))
+    return (np.sqrt(np.mean(np.square((y_true - y_pred) / y_true))))
 
 def cv_train(
     _model_class: Type[BaseModel],
@@ -105,3 +101,22 @@ def grid_search(
     best_model = results[np.argmax([r.best_model.valid_rmspe for r in results])].best_model
 
     return GridSearchResult(search_results, best_model)
+
+def calc_model_importance(model, feature_names=None, importance_type='gain'):
+    importance_df = pd.DataFrame(model.feature_importance(importance_type=importance_type),
+                                 index=feature_names,
+                                 columns=['importance']).sort_values('importance')
+    return importance_df
+
+def plot_importance(importance_df, title='',
+                    save_filepath=None, figsize=(8, 12)):
+    _, ax = plt.subplots(figsize=figsize)
+    importance_df.plot.barh(ax=ax)
+    if title:
+        plt.title(title)
+    plt.tight_layout()
+    if save_filepath is None:
+        plt.show()
+    else:
+        plt.savefig(save_filepath)
+    plt.close()

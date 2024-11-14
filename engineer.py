@@ -17,8 +17,9 @@ RVOL_FEATURE_GRID = {
 }
 
 def wap_ewa(df: pd.DataFrame, wap2_wt: float, ewa_alpha: float) -> pd.DataFrame:
-    df['wap1'] = (df['bid_price1'] * df['ask_size1'] + df['ask_price1'] * df['bid_size1']) / (df['bid_size1'] + df['ask_size1'])
-    df['wap2'] = (df['bid_price2'] * df['ask_size2'] + df['ask_price2'] * df['bid_size2']) / (df['bid_size2'] + df['ask_size2'])
+    if "wap1" not in df.columns and "wap2" not in df.columns:
+        df['wap1'] = (df['bid_price1'] * df['ask_size1'] + df['ask_price1'] * df['bid_size1']) / (df['bid_size1'] + df['ask_size1'])
+        df['wap2'] = (df['bid_price2'] * df['ask_size2'] + df['ask_price2'] * df['bid_size2']) / (df['bid_size2'] + df['ask_size2'])
     df[f'wap_{wap2_wt}_{ewa_alpha}'] = (df['wap1'] * (1 - wap2_wt) + df['wap2'] * wap2_wt).ewm(alpha=ewa_alpha).mean()
     return df
 
@@ -38,7 +39,7 @@ def create_rvol_calc(shift_size: int) -> callable:
     return lambda x: calc_rvol(x, shift_size)
 
 def engineer_book_features(stock_id: int, train_test: str) -> pd.DataFrame:
-    file_path = load_data(stock_id, "book", train_test)
+    file_path = load_source_data(stock_id, "book", train_test)
     df_book = pd.read_parquet(file_path)
 
     for wap2_wt, ewa_alpha in itertools.product(*list(RVOL_FEATURE_GRID.values())[:2]):
@@ -62,7 +63,7 @@ def engineer_book_features(stock_id: int, train_test: str) -> pd.DataFrame:
     return df_book_features
 
 def engineer_trade_features(stock_id: int, train_test: str) -> pd.DataFrame:
-    file_path = load_data(stock_id, "trade", train_test)
+    file_path = load_source_data(stock_id, "trade", train_test)
     df_trade = pd.read_parquet(file_path)
 
     df_trade_features = df_trade.groupby('time_id').agg(
@@ -73,7 +74,7 @@ def engineer_trade_features(stock_id: int, train_test: str) -> pd.DataFrame:
 
     return df_trade_features
 
-def load_data(stock_id: int, data_type: str, train_test: str) -> Path:
+def load_source_data(stock_id: int, data_type: str, train_test: str) -> Path:
     file_dir = DATA_DIR.joinpath(f"{data_type}_{train_test}.parquet").joinpath(f"stock_id={stock_id}")
     file_name = os.listdir(file_dir)[0]
     full_path = file_dir.joinpath(file_name)
