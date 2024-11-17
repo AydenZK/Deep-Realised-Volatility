@@ -1,0 +1,3 @@
+,hidden_layer_sizes,activation,learning_rate_init,learning_rate,train_rmspe_mean,valid_rmspe_mean,train_rmspe_std,valid_rmspe_std
+0,"(64, 128, 128, 32)",tanh,0.001,adaptive,0.9321073811857719,0.9293011187651852,0.339567472274851,0.33889861696957074
+1,"(64, 64, 64)",tanh,1e-05,adaptive,2.3183211249542732,2.2979180846889866,0.049023898886751294,0.09387429462680363
