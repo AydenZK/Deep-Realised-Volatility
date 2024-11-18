@@ -49,7 +49,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--grid_search", action="store_true", default=True, help="Perform Grid Search")
     parser.add_argument("--n_splits", type=int, default=2, help="Number of KFolds")
     parser.add_argument("--search_iter", type=int, default=2, help="Number of Grid Search Iterations")
-    parser.add_argument("--load_local_features", action="store_true", default=False, help="Load Features previously saved locally")
+    parser.add_argument("--load_local_features", action="store_true", default=True, help="Load Features previously saved locally")
     parser.add_argument("--normalize", action="store_true", default=False, help="Normalize Data")
     parser.add_argument("--drop_na", action="store_true", default=False, help="Drop NA Values")
     parser.add_argument("--n_jobs", type=int, default=-1, help="Number of Jobs")
